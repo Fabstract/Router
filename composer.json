@@ -1,7 +1,7 @@
 {
   "name": "fabstract/router",
   "type": "library",
-  "description": "Router library for PHP",
+  "description": "Routing library for PHP",
   "keywords": [
     "php",
     "router"
