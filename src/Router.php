@@ -66,7 +66,7 @@ class Router implements RouterInterface
     public function match($uri, $route_aware_list)
     {
         Assert::isNotEmptyString($uri, 'uri');
-        Assert::isArray($route_aware_list); // todo array of type
+        Assert::isArrayOfType($route_aware_list, RouteAwareInterface::class, 'route_aware_list');
 
         foreach ($route_aware_list as $route_aware) {
             $matched = $this->internalMatch($uri, $route_aware->getRoute(), $rest_of_uri, $parameters);
