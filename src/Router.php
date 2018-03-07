@@ -90,6 +90,7 @@ class Router implements RouterInterface
         Assert::isRegexMatches($route, '/^(?:\/|(?:\/[\w\-]+|\/#\w+|\/\{\w+\})+)$/', 'route');
 
         $uri = rtrim(preg_replace("/\/\/+/", "/", $uri), '/');
+        $route = str_replace('/', '\/', $route);
 
         $compiled_pattern = $this->compile($route);
 
