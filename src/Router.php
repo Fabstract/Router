@@ -38,8 +38,7 @@ class Router implements RouterInterface
         }
 
         $replaced_route = $this->replaceShortcuts($raw_route);
-        $compiled_route = preg_replace('/\{\w+\}/', '(\w+)', $replaced_route);
-        $compiled_pattern = sprintf("/^%s(?<uri>\/.*)?$/", $compiled_route);
+        $compiled_pattern = preg_replace('/\{\w+\}/', '(\w+)', $replaced_route);
 
         $this->compiled_pattern_lookup[$raw_route] = $compiled_pattern;
         return $compiled_pattern;
@@ -61,15 +60,16 @@ class Router implements RouterInterface
     /**
      * @param string $uri
      * @param RouteAwareInterface[] $route_aware_list
+     * @param bool $is_exact
      * @return RouterMatchResult|null
      */
-    public function match($uri, $route_aware_list)
+    public function match($uri, $route_aware_list, $is_exact = false)
     {
-        Assert::isNotEmptyString($uri, 'uri');
+        Assert::startsWith($uri, '/', 'uri');
         Assert::isArrayOfType($route_aware_list, RouteAwareInterface::class, 'route_aware_list');
 
         foreach ($route_aware_list as $route_aware) {
-            $matched = $this->internalMatch($uri, $route_aware->getRoute(), $rest_of_uri, $parameters);
+            $matched = $this->internalMatch($uri, $route_aware->getRoute(), $rest_of_uri, $parameters, $is_exact);
             if ($matched === true) {
                 return new RouterMatchResult($route_aware, $rest_of_uri, $parameters);
             }
@@ -83,16 +83,28 @@ class Router implements RouterInterface
      * @param string $route
      * @param string $rest_of_uri
      * @param string[] $parameters
+     * @param bool $is_exact
      * @return bool
      */
-    private function internalMatch($uri, $route, &$rest_of_uri, &$parameters)
+    private function internalMatch($uri, $route, &$rest_of_uri, &$parameters, $is_exact = false)
     {
-        Assert::isRegexMatches($route, '/^(?:\/|(?:\/[\w\-]+|\/#\w+|\/\{\w+\})+)$/', 'route');
+        if ($route === '/') {
+            $rest_of_uri = $uri;
+            $parameters = [];
+            return true;
+        }
 
-        $uri = rtrim(preg_replace("/\/\/+/", "/", $uri), '/');
+        Assert::isRegexMatches($route, '/^(?:\/[\w\-]+|\/#\w+|\/\{\w+\})+$/', 'route');
+
+        $uri = preg_replace("/\/\/+/", "/", $uri);
         $route = str_replace('/', '\/', $route);
 
         $compiled_pattern = $this->compile($route);
+        if ($is_exact === false) {
+            $compiled_pattern = sprintf('/^%s(?<uri>\/.*)?$/', $compiled_pattern);
+        } else {
+            $compiled_pattern = sprintf('/^%s\/?$/', $compiled_pattern);
+        }
 
         if (preg_match($compiled_pattern, $uri, $matches) === 1) {
 
