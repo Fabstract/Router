@@ -1,6 +1,6 @@
 <?php
 
-namespace Fabs\Component\Router;
+namespace Fabstract\Component\Router;
 
 interface RouterInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Fabs\Component\Router;
+namespace Fabstract\Component\Router;
 
-use Fabs\Component\Assert\Assert;
+use Fabstract\Component\Assert\Assert;
 
 class Router implements RouterInterface
 {
