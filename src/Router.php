@@ -89,19 +89,21 @@ class Router implements RouterInterface
     private function internalMatch($uri, $route, &$rest_of_uri, &$parameters, $is_exact = false)
     {
         if ($route === '/') {
-            $rest_of_uri = $uri;
-            $parameters = [];
-            return true;
+            if ($is_exact === false || $uri === '/') {
+                $rest_of_uri = $uri;
+                $parameters = [];
+                return true;
+            }
         }
 
-        Assert::isRegexMatches($route, '/^(?:\/[\w\-]+|\/#\w+|\/\{\w+\})+$/', 'route');
+        Assert::isRegexMatches($route, '/^(?:\/|\/[\w\-]+|\/#\w+|\/\{\w+\})+$/', 'route');
 
         $uri = preg_replace("/\/\/+/", "/", $uri);
         $route = str_replace('/', '\/', $route);
 
         $compiled_pattern = $this->compile($route);
         if ($is_exact === false) {
-            $compiled_pattern = sprintf('/^%s(?<uri>\/.*)?$/', $compiled_pattern);
+            $compiled_pattern = sprintf('/^%s(?<uri>\\/.*)?$/', $compiled_pattern);
         } else {
             $compiled_pattern = sprintf('/^%s\/?$/', $compiled_pattern);
         }
