@@ -21,12 +21,6 @@
   },
   "require": {
     "php": "^7.0",
-    "fabstract/assert": "dev-master"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@github.com:Fabstract/Assert.git"
-    }
-  ]
+    "fabstract/assert": "0.1.0"
+  }
 }
