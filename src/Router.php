@@ -38,7 +38,7 @@ class Router implements RouterInterface
         }
 
         $replaced_route = $this->replaceShortcuts($raw_route);
-        $compiled_pattern = preg_replace('/\{\w+\}/', '(\w+)', $replaced_route);
+        $compiled_pattern = preg_replace('/\{\w+\}/', '([\w\-]+)', $replaced_route);
 
         $this->compiled_pattern_lookup[$raw_route] = $compiled_pattern;
         return $compiled_pattern;
